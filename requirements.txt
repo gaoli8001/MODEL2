@@ -1,12 +1,11 @@
-streamlit
-joblib
-numpy
-pandas
-matplotlib
+python==3.9
 scikit-learn
+streamlit
 shap
-scipy
-seaborn
-python
-pip
+pandas
+numpy
+matplotlib
+joblib
+ipython
+
 
