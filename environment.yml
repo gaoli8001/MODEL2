@@ -4,14 +4,15 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - scikit-learn=1.5.1
+  - scikit-learn>=1.5.1
   - streamlit
-  - joblib
-  - numpy
-  - pandas
   - shap
+  - pandas
+  - numpy
   - matplotlib
+  - joblib
   - ipython
+  - wheel
+  - setuptools
+  - menuinst
   - pip
-  - pip:
-    - streamlit
