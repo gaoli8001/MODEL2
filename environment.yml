@@ -3,15 +3,15 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.11  # 保持统一的 Python 版本
-  - scikit-learn>=1.5.1
-  - streamlit>=1.0.0
-  - shap>=0.41.0
-  - pandas>=1.4.0
-  - numpy>=1.21.0
-  - matplotlib>=3.4.0
-  - joblib>=1.1.0
-  - ipython>=7.0.0
-  - pip>=21.0.0
+  - python
+  - scikit-learn
+  - streamlit
+  - shap
+  - pandas
+  - numpy
+  - matplotlib
+  - joblib
+  - ipython
+  - pip
   - pip:
-    - # 在此处添加任何需要通过 pip 安装的包
+    - 
