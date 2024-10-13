@@ -75,8 +75,5 @@ if st.button("Predict"):
     shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=feature_names))
     shap.force_plot(explainer.expected_value, shap_values[0], pd.DataFrame([feature_values], columns=feature_names), matplotlib=True)
     plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=1200)
-<<<<<<< HEAD
     st.image("shap_force_plot.png")
-=======
-    st.image("shap_force_plot.png")
->>>>>>> dd4d6535e7a8b411da8a14b245da1e30272c702a
+
