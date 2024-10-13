@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.12  # 保持统一的 Python 版本
+  - python=3.11  # 保持统一的 Python 版本
   - scikit-learn>=1.5.1
   - streamlit>=1.0.0
   - shap>=0.41.0
