@@ -1,60 +1,56 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Oct 13 10:21:23 2024
-
-@author: gaoli
-"""
 
 import sys
 print(sys.executable)
 import sys
 print(sys.path)
 
-import streamlit as st
 import joblib
+import streamlit as st
 import numpy as np
 import pandas as pd
 import shap
 import matplotlib.pyplot as plt
 
-# Load the model
-model = joblib.load('LOG.pkl')  # Load the best Logistic Regression model trained with selected features
+# 加载模型对象
+model_data = joblib.load('LOG.pkl')
+model = model_data['model']
+scaler = model_data['scaler']
 
-# Define feature names
-feature_names = [
-    "HbA1c", "Weight", "Tyg", "LDL", "Age", "RBC", "Sex", "GLU", "WBC", "PLR", "CRP"
-]
-
-# Streamlit user interface
+# 定义 Streamlit 用户界面
 st.title("Type 2 Diabetes Predictor")
 
-# Input features
+# 输入特征
 age = st.number_input("Age:", min_value=1, max_value=120, value=50)
 sex = st.selectbox("Sex (0=Female, 1=Male):", options=[0, 1], format_func=lambda x: 'Female (0)' if x == 0 else 'Male (1)')
 weight = st.number_input("Weight (kg):", min_value=20.0, max_value=200.0, value=70.0)
 hba1c = st.number_input("HbA1c (%):", min_value=2.0, max_value=15.0, value=5.5)
-ldl = st.number_input("LDL (mg/dL):", min_value=50.0, max_value=300.0, value=100.0)
-rbc = st.number_input("RBC (10^6/uL):", min_value=2.0, max_value=10.0, value=5.0)
-glu = st.number_input("GLU (mg/dL):", min_value=50.0, max_value=400.0, value=120.0)
-wbc = st.number_input("WBC (10^3/uL):", min_value=1.0, max_value=20.0, value=7.0)
+ldl = st.number_input("LDL (mmol/L):", min_value=1.3, max_value=7.8, value=2.6)
+rbc = st.number_input("RBC (10^12/L):", min_value=2.0, max_value=10.0, value=5.0)
+glu = st.number_input("GLU (mmol/L):", min_value=2.8, max_value=22.2, value=6.7)
+wbc = st.number_input("WBC (10^9/L):", min_value=1.0, max_value=20.0, value=7.0)
 plr = st.number_input("PLR (Platelet-Lymphocyte Ratio):", min_value=0.0, max_value=500.0, value=150.0)
 crp = st.number_input("CRP (mg/L):", min_value=0.0, max_value=100.0, value=5.0)
 tyg = st.number_input("Tyg (Triacylglycerol):", min_value=0.0, max_value=10.0, value=1.5)
 
-# Process inputs and make predictions
+# 处理输入并进行预测
 feature_values = [hba1c, weight, tyg, ldl, age, rbc, sex, glu, wbc, plr, crp]
 features = np.array([feature_values])
 
-if st.button("Predict"):
-    # Predict class and probabilities
-    predicted_class = model.predict(features)[0]
-    predicted_proba = model.predict_proba(features)[0]
+# 特征缩放
+features_scaled = scaler.transform(features)
 
-    # Display prediction results
+if st.button("Predict"):
+    # 预测类别和概率
+    predicted_class = model.predict(features_scaled)[0]
+    predicted_proba = model.predict_proba(features_scaled)[0]
+
+    # 显示预测结果
     st.write(f"**Predicted Class:** {predicted_class}")
     st.write(f"**Prediction Probabilities:** {predicted_proba}")
 
-    # Generate advice based on prediction results
+    # 根据预测结果生成建议
     probability = predicted_proba[predicted_class] * 100
     if predicted_class == 1:
         advice = (
@@ -74,10 +70,13 @@ if st.button("Predict"):
         )
     st.write(advice)
 
-    # Calculate SHAP values and display force plot
-    explainer = shap.LinearExplainer(model, features, feature_perturbation="interventional")
-    shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=feature_names))
-    shap.force_plot(explainer.expected_value, shap_values[0], pd.DataFrame([feature_values], columns=feature_names), matplotlib=True)
+    # 计算 SHAP 值并显示力图
+    explainer = shap.LinearExplainer(model, features_scaled, feature_perturbation="interventional")
+    shap_values = explainer.shap_values(pd.DataFrame([feature_values], columns=[
+        "HbA1c", "Weight", "Tyg", "LDL", "Age", "RBC", "Sex", "GLU", "WBC", "PLR", "CRP"
+    ]))
+    shap.force_plot(explainer.expected_value, shap_values[0], pd.DataFrame([feature_values], columns=[
+        "HbA1c", "Weight", "Tyg", "LDL", "Age", "RBC", "Sex", "GLU", "WBC", "PLR", "CRP"
+    ]), matplotlib=True)
     plt.savefig("shap_force_plot.png", bbox_inches='tight', dpi=1200)
     st.image("shap_force_plot.png")
-
