@@ -7,6 +7,8 @@ Created on Sun Oct 13 10:21:23 2024
 
 import sys
 print(sys.executable)
+import sys
+print(sys.path)
 
 import streamlit as st
 import joblib
